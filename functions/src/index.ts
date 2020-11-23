@@ -8,20 +8,35 @@ import { TodoistProject } from "todoist-rest-api/dist";
 
 export const rescheduleTasks = functions.https.onRequest(
   async (request, response) => {
+    if (request.query["authKey"] !== process.env.AUTH_KEY) {
+      response.sendStatus(403);
+      return;
+    }
     const todoistApi = todoist(process.env.TODOIST_API_KEY!);
 
     const projectIdsToReschedule = await getProjectIdsToReschedule(todoistApi);
-    console.log("project", projectIdsToReschedule);
+    const labelsToSkip = await getLabelIdsToSkip(todoistApi);
     const tasks = await todoistApi.v1.task.findAll();
-    const now = moment();
+    const now = currentMoment();
+
     const tasksToReschedule = tasks.filter((task) => {
       if (!task.due || !task.due.date) {
         return false;
       }
       // Tasks already scheduled in the future should not be rescheduled.
-      if (moment(task.due.date).isAfter(now)) {
+      const taskDueDate = moment
+        .tz(task.due.date, process.env.TIMEZONE!)
+        .startOf("day");
+      if (taskDueDate.isAfter(now)) {
         return false;
       }
+
+      // Check if any ignore labels are on the task.
+      if (task.label_ids.some((label) => labelsToSkip.has(label))) {
+        return false;
+      }
+
+      // Check the project.
       return projectIdsToReschedule.has(task.project_id);
     });
 
@@ -74,6 +89,24 @@ async function getProjectIdsToReschedule(
         lowerProjectNames.has(project.name.trim().toLowerCase())
       )
       .map((project) => project.id)
+  );
+}
+
+async function getLabelIdsToSkip(todoistApi: any) {
+  if (!process.env.IGNORE_LABELS) {
+    console.error("No labels to ignore found");
+    return new Set();
+  }
+  const lowerLabelNames = new Set(
+    process.env.IGNORE_LABELS.split(",").map((label) =>
+      label.trim().toLowerCase()
+    )
+  );
+  const labels: TodoistProject[] = await todoistApi.v1.label.findAll({});
+  return new Set(
+    labels
+      .filter((label) => lowerLabelNames.has(label.name.trim().toLowerCase()))
+      .map((label) => label.id)
   );
 }
 

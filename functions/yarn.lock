@@ -2720,7 +2720,7 @@ to-readable-stream@^2.0.0:
 
 "todoist-rest-api@https://github.com/mvd7793/todoist-rest-api#matts_projects":
   version "1.3.4"
-  resolved "https://github.com/mvd7793/todoist-rest-api#4a09f591d657e5031dd002c7653c14f7635fd66b"
+  resolved "https://github.com/mvd7793/todoist-rest-api#9d0b854debad8215640feee5529be5bd7fac00ff"
   dependencies:
     fast-safe-stringify "2.0.7"
     got "10.7.0"
