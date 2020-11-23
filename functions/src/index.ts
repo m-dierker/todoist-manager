@@ -1,8 +1,8 @@
 // @ts-ignore
 require("dotenv").config();
 import * as functions from "firebase-functions";
-import { Moment } from "moment";
-import moment = require("moment");
+import { Moment } from "moment-timezone";
+import moment = require("moment-timezone");
 import todoist from "todoist-rest-api";
 import { TodoistProject } from "todoist-rest-api/dist";
 
@@ -13,8 +13,13 @@ export const rescheduleTasks = functions.https.onRequest(
     const projectIdsToReschedule = await getProjectIdsToReschedule(todoistApi);
     console.log("project", projectIdsToReschedule);
     const tasks = await todoistApi.v1.task.findAll();
+    const now = moment();
     const tasksToReschedule = tasks.filter((task) => {
       if (!task.due || !task.due.date) {
+        return false;
+      }
+      // Tasks already scheduled in the future should not be rescheduled.
+      if (moment(task.due.date).isAfter(now)) {
         return false;
       }
       return projectIdsToReschedule.has(task.project_id);
@@ -22,12 +27,14 @@ export const rescheduleTasks = functions.https.onRequest(
 
     if (tasksToReschedule.length === 0) {
       console.log("No tasks to reschedule!");
+      response.send("No tasks to reschedule");
       return;
     }
 
     const nextWorkday = getNextWorkday();
     const nextWorkdayStr = nextWorkday.format("YYYY-MM-DD");
     for (const taskToReschedule of tasksToReschedule) {
+      console.log("rescheduling ", taskToReschedule.content);
       try {
         // @ts-ignore
         const result = await todoistApi.v1.task.update(taskToReschedule.id, {
@@ -44,6 +51,7 @@ export const rescheduleTasks = functions.https.onRequest(
       }
     }
     console.log(`Updated ${tasksToReschedule.length} tasks`);
+    response.send(`Updated ${tasksToReschedule.length} tasks`);
   }
 );
 
@@ -73,11 +81,16 @@ const ISO_WEEKDAY_MONDAY = 1;
 const ISO_WEEKDAY_FRIDAY = 5;
 
 function getNextWorkday(): Moment {
-  const nextIsoWeekday = moment().isoWeekday() + 1;
+  const now = currentMoment();
+  const nextIsoWeekday = now.isoWeekday() + 1;
   if (nextIsoWeekday <= ISO_WEEKDAY_FRIDAY) {
-    return moment().isoWeekday(nextIsoWeekday);
+    return now.isoWeekday(nextIsoWeekday);
   } else {
     // On weekends, defer to next Monday.
-    return moment().add(1, "weeks").isoWeekday(ISO_WEEKDAY_MONDAY);
+    return now.add(1, "weeks").isoWeekday(ISO_WEEKDAY_MONDAY);
   }
+}
+
+function currentMoment(): Moment {
+  return moment().tz(process.env.TIMEZONE!);
 }

@@ -1470,10 +1470,10 @@ google-p12-pem@^3.0.3:
   dependencies:
     node-forge "^0.10.0"
 
-got@10.6.0:
-  version "10.6.0"
-  resolved "https://registry.yarnpkg.com/got/-/got-10.6.0.tgz#ac3876261a4d8e5fc4f81186f79955ce7b0501dc"
-  integrity sha512-3LIdJNTdCFbbJc+h/EH0V5lpNpbJ6Bfwykk21lcQvQsEcrzdi/ltCyQehFHLzJ/ka0UMH4Slg0hkYvAZN9qUDg==
+got@10.7.0:
+  version "10.7.0"
+  resolved "https://registry.yarnpkg.com/got/-/got-10.7.0.tgz#62889dbcd6cca32cd6a154cc2d0c6895121d091f"
+  integrity sha512-aWTDeNw9g+XqEZNcTjMMZSy7B7yE9toWOFYip7ofFTLleJhvZwUxxTxkTpKvF+p1SAA4VHmuEy7PiHTHyq8tJg==
   dependencies:
     "@sindresorhus/is" "^2.0.0"
     "@szmarczak/http-timer" "^4.0.0"
@@ -2010,7 +2010,14 @@ mkdirp@^0.5.1:
   dependencies:
     minimist "^1.2.5"
 
-moment@*, moment@^2.29.1:
+moment-timezone@^0.5.32:
+  version "0.5.32"
+  resolved "https://registry.yarnpkg.com/moment-timezone/-/moment-timezone-0.5.32.tgz#db7677cc3cc680fd30303ebd90b0da1ca0dfecc2"
+  integrity sha512-Z8QNyuQHQAmWucp8Knmgei8YNo28aLjJq6Ma+jy1ZSpSk5nyfRT8xgUbSQvD2+2UajISfenndwvFuH3NGS+nvA==
+  dependencies:
+    moment ">= 2.9.0"
+
+moment@*, "moment@>= 2.9.0", moment@^2.29.1:
   version "2.29.1"
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.29.1.tgz#b2be769fa31940be9eeea6469c075e35006fa3d3"
   integrity sha512-kHmoybcPV8Sqy59DwNDY3Jefr64lK/by/da0ViFcuA4DH0vQg5Q6Ze5VimxkfQNSC+Mls/Kx53s7TjP1RhFEDQ==
@@ -2711,13 +2718,22 @@ to-readable-stream@^2.0.0:
   resolved "https://registry.yarnpkg.com/to-readable-stream/-/to-readable-stream-2.1.0.tgz#82880316121bea662cdc226adb30addb50cb06e8"
   integrity sha512-o3Qa6DGg1CEXshSdvWNX2sN4QHqg03SPq7U6jPXRahlQdl5dK8oXjkU/2/sGrnOZKeGV1zLSO8qPwyKklPPE7w==
 
-todoist-rest-api@^1.3.4:
+"todoist-rest-api@https://github.com/mvd7793/todoist-rest-api#matts_projects":
   version "1.3.4"
-  resolved "https://registry.yarnpkg.com/todoist-rest-api/-/todoist-rest-api-1.3.4.tgz#b679b9c98175c94be988dbe1a20f088e0f2b6959"
-  integrity sha512-xbqGIHJdehywKyuiav4EmF9YDn5aQtXZhd49Qw+uhOtm/PAUkXu/Hsa9Ou5AE5BzM91GEugrHvRn59De4oJwvg==
+  resolved "https://github.com/mvd7793/todoist-rest-api#4a09f591d657e5031dd002c7653c14f7635fd66b"
   dependencies:
     fast-safe-stringify "2.0.7"
-    got "10.6.0"
+    got "10.7.0"
+    query-string "6.11.1"
+    todoist-rest-api mvd7793/todoist-rest-api
+    uuid "3.4.0"
+
+todoist-rest-api@mvd7793/todoist-rest-api:
+  version "1.3.4"
+  resolved "https://codeload.github.com/mvd7793/todoist-rest-api/tar.gz/ecd0939809e7bf565814df4d48a6baaf06e4c805"
+  dependencies:
+    fast-safe-stringify "2.0.7"
+    got "10.7.0"
     query-string "6.11.1"
     uuid "3.4.0"
 
