@@ -28,9 +28,13 @@ Todoist Manager is setup to be deployed as a [Firebase Cloud function](https://f
 Copy `.env.sample` to `.env`. Fill in the environment fields:
 
 `TODOIST_API_KEY`: Integration key from your [Todoist settings](https://todoist.com/prefs/integrations).
+
 `TIMEZONE`: Your local timezone. (It might be possible to pull this from Todoist but I have not done that yet).
+
 `PROJECT_TO_RESCHEDULE`: Comma-separated case insensitive list of projects with tasks that should be rescheduled. For me, this is a list of the Todoist projects that have work tasks in them.
+
 `IGNORE_LABELS`: Comma-separated case insensitive list of labels that can be applied to skip a specific task. Note that labels are a feature of Todoist Premium and are not required to use this project.
+
 `AUTH_KEY`: Generate some random word or phrase to pass to your function so it only reschedules on calls from you.
 
 ### Deploy
