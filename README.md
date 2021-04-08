@@ -55,6 +55,7 @@ Ex: https://us-west1-YOUR-PROJECT-ID.cloudfunctions.net/rescheduleTasks?authKey=
 
 ### Develop locally
 
+`cd functions`
 `nodemon`: Runs a persistent local server that refreshes on changes.
 
 A URL for your function is printed when the emulator starts (ex: http://localhost:5001/your-project/us-west1/rescheduleTasks). You can open this URL in your browser, but don't forget your auth key!
