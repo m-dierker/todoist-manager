@@ -1,6 +1,10 @@
 import { Moment } from "moment-timezone";
 import moment = require("moment-timezone");
-import todoist, { TodoistProject, TodoistRESTAPI } from "todoist-rest-api";
+import todoist, {
+  TodoistLabel,
+  TodoistProject,
+  TodoistRESTAPI,
+} from "todoist-rest-api";
 
 export const todoistApi = todoist(process.env.TODOIST_API_KEY!);
 
@@ -9,7 +13,7 @@ export function currentMoment(): Moment {
 }
 
 /** Returns a set of label IDs that shouldn't be touched by anything. */
-export async function getLabelIdsToSkip(todoistApi: any): Promise<Set<number>> {
+export async function getLabelIdsToSkip(): Promise<Set<number>> {
   if (!process.env.IGNORE_LABELS) {
     console.error("No labels to ignore found");
     return new Set();
@@ -19,7 +23,7 @@ export async function getLabelIdsToSkip(todoistApi: any): Promise<Set<number>> {
       label.trim().toLowerCase()
     )
   );
-  const labels: TodoistProject[] = await todoistApi.v1.label.findAll({});
+  const labels: TodoistLabel[] = await todoistApi.v1.label.findAll({});
   return new Set(
     labels
       .filter((label) => lowerLabelNames.has(label.name.trim().toLowerCase()))

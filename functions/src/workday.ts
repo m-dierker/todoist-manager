@@ -1,10 +1,8 @@
 import { Moment } from "moment-timezone";
 import moment = require("moment-timezone");
-import todoist, { TodoistTask } from "todoist-rest-api";
+import { TodoistTask } from "todoist-rest-api";
 import { TodoistProject } from "todoist-rest-api/dist";
-import { Request } from "firebase-functions";
-import { Response } from "express";
-import { currentMoment, getLabelIdsToSkip, todoistApi } from "./utils";
+import { currentMoment, todoistApi } from "./utils";
 import { BaseRescheduler } from "./rescheduler";
 
 export class WorkdayTaskRescheduler extends BaseRescheduler {

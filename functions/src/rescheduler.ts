@@ -20,7 +20,7 @@ export abstract class BaseRescheduler {
     }
 
     const allTasks = await todoistApi.v1.task.findAll();
-    const labelsToSkip = await getLabelIdsToSkip(todoistApi);
+    const labelsToSkip = await getLabelIdsToSkip();
     const now = currentMoment();
 
     const rescheduledTasks = await Promise.all(
