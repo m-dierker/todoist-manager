@@ -10,8 +10,8 @@ export class OverdueTaskRescheduler extends BaseRescheduler {
     now,
   }: {
     task: TodoistTask;
-    now: Moment;
-  }): Promise<Moment | undefined> {
+    now: moment.Moment;
+  }): Promise<moment.Moment | undefined> {
     const startOfCurrentDay = now.startOf("day");
     const taskDueDate = moment
       .tz(task.due!.date, process.env.TIMEZONE!)

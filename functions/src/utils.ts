@@ -1,10 +1,6 @@
 import { Moment } from "moment-timezone";
 import moment = require("moment-timezone");
-import todoist, {
-  TodoistLabel,
-  TodoistProject,
-  TodoistRESTAPI,
-} from "todoist-rest-api";
+import todoist, { TodoistLabel } from "todoist-rest-api";
 
 export const todoistApi = todoist(process.env.TODOIST_API_KEY!);
 

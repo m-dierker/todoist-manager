@@ -1,8 +1,8 @@
-import { Moment } from "moment";
 import { TodoistTask } from "todoist-rest-api";
 import { Request } from "firebase-functions";
 import { Response } from "express";
 import { currentMoment, getLabelIdsToSkip, todoistApi } from "./utils";
+import moment = require("moment-timezone");
 
 export abstract class BaseRescheduler {
   abstract getRescheduleTime({
@@ -10,8 +10,8 @@ export abstract class BaseRescheduler {
     now,
   }: {
     task: TodoistTask;
-    now: Moment;
-  }): Promise<Moment | undefined>;
+    now: moment.Moment;
+  }): Promise<moment.Moment | undefined>;
 
   async reschedule(request: Request, response: Response): Promise<void> {
     if (request.query["authKey"] !== process.env.AUTH_KEY) {
@@ -36,7 +36,7 @@ export abstract class BaseRescheduler {
   private async rescheduleTask(
     task: TodoistTask,
     labelsToSkip: Set<number>,
-    now: Moment
+    now: moment.Moment
   ): Promise<boolean> {
     // If the task doesn't have a date, it can't be rescheduled.
     if (!task.due || !task.due.date) {
