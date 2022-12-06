@@ -1,13 +1,12 @@
 import { Moment } from "moment-timezone";
 import moment = require("moment-timezone");
-import { TodoistTask } from "todoist-rest-api";
-import { TodoistProject } from "todoist-rest-api/dist";
 import { currentMoment, todoistApi } from "./utils";
 import { BaseRescheduler } from "./rescheduler";
+import { Project, Task } from "@doist/todoist-api-typescript";
 
 export class WorkdayTaskRescheduler extends BaseRescheduler {
   /** Cached work project IDs for the life of the rescheduler. */
-  private projectIdsToReschedule: Promise<Set<number>>;
+  private projectIdsToReschedule: Promise<Set<string>>;
 
   private nextWorkday: Moment;
 
@@ -21,7 +20,7 @@ export class WorkdayTaskRescheduler extends BaseRescheduler {
     task,
     now,
   }: {
-    task: TodoistTask;
+    task: Task;
     now: Moment;
   }): Promise<Moment | undefined> {
     const taskDueDate = moment
@@ -35,7 +34,7 @@ export class WorkdayTaskRescheduler extends BaseRescheduler {
 
     // Filter to just work tasks.
     const projectIdsToReschedule = await this.projectIdsToReschedule;
-    if (!projectIdsToReschedule.has(task.project_id)) {
+    if (!projectIdsToReschedule.has(task.projectId)) {
       return;
     }
 
@@ -43,7 +42,7 @@ export class WorkdayTaskRescheduler extends BaseRescheduler {
   }
 }
 
-async function getWorkProjectIds(): Promise<Set<number>> {
+async function getWorkProjectIds(): Promise<Set<string>> {
   if (!process.env.WORK_PROJECTS_TO_RESCHEDULE) {
     console.error("No projects to reschedule found");
     return new Set();
@@ -53,7 +52,7 @@ async function getWorkProjectIds(): Promise<Set<number>> {
       project.trim().toLowerCase()
     )
   );
-  const projects: TodoistProject[] = await todoistApi.v1.project.findAll({});
+  const projects: Project[] = await todoistApi.getProjects();
   return new Set(
     projects
       .filter((project) =>

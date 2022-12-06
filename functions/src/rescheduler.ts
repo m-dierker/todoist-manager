@@ -1,15 +1,15 @@
-import { TodoistTask } from "todoist-rest-api";
 import { Request } from "firebase-functions";
 import { Response } from "express";
 import { currentMoment, getLabelIdsToSkip, todoistApi } from "./utils";
 import moment = require("moment-timezone");
+import { Task, UpdateTaskArgs } from "@doist/todoist-api-typescript";
 
 export abstract class BaseRescheduler {
   abstract getRescheduleTime({
     task,
     now,
   }: {
-    task: TodoistTask;
+    task: Task;
     now: moment.Moment;
   }): Promise<moment.Moment | undefined>;
 
@@ -19,7 +19,7 @@ export abstract class BaseRescheduler {
       return;
     }
 
-    const allTasks = await todoistApi.v1.task.findAll();
+    const allTasks = await todoistApi.getTasks();
     const labelsToSkip = await getLabelIdsToSkip();
     const now = currentMoment();
 
@@ -34,8 +34,8 @@ export abstract class BaseRescheduler {
   }
 
   private async rescheduleTask(
-    task: TodoistTask,
-    labelsToSkip: Set<number>,
+    task: Task,
+    labelsToSkip: Set<string>,
     now: moment.Moment
   ): Promise<boolean> {
     // If the task doesn't have a date, it can't be rescheduled.
@@ -44,7 +44,7 @@ export abstract class BaseRescheduler {
     }
 
     // If the task has an ignore label, it shouldn't be rescheduled.
-    if (task.label_ids.some((label) => labelsToSkip.has(label))) {
+    if (task.labels.some((label) => labelsToSkip.has(label))) {
       return false;
     }
 
@@ -54,14 +54,24 @@ export abstract class BaseRescheduler {
       return false;
     }
 
-    const formattedRescheduleDate = rescheduleTime.format("YYYY-MM-DD");
-    console.log(`Rescheduling ${task.content} for ${formattedRescheduleDate}`);
+    // If this is a datetime (i.e. not midnight), update the datetime instead.
+    let updateArg: UpdateTaskArgs;
+    if (rescheduleTime.hour() !== 0 || rescheduleTime.minute() !== 0) {
+      updateArg = {
+        dueDatetime: rescheduleTime.toISOString(),
+      };
+    } else {
+      const formattedRescheduleDate = rescheduleTime.format("YYYY-MM-DD");
+      updateArg = { dueDate: formattedRescheduleDate };
+    }
+
+    console.log(
+      `Rescheduling ${task.content} for ${JSON.stringify(updateArg)}`
+    );
 
     try {
       // @ts-ignore
-      const result = await todoistApi.v1.task.update(task.id, {
-        due_date: formattedRescheduleDate,
-      });
+      const result = await todoistApi.updateTask(task.id, updateArg);
       if (result) {
         return true;
       }
