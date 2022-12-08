@@ -38,7 +38,7 @@ export class WorkdayTaskRescheduler extends BaseRescheduler {
       return;
     }
 
-    return this.nextWorkday;
+    return this.nextWorkday.startOf("day");
   }
 }
 
