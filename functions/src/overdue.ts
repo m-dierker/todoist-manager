@@ -18,7 +18,7 @@ export class OverdueTaskRescheduler extends BaseRescheduler {
       // This has to be done manually since times are stored in UTC,
       // so a task due late in the day might be due "tomorrow" in UTC.
       // Both due.date and due.datetime are in UTC.
-      taskDueDate = moment.tz(task.due!.datetime, process.env.TIMEZONE!);
+      taskDueDate = moment.tz(task.due.datetime, process.env.TIMEZONE!);
     } else {
       taskDueDate = moment
         .tz(task.due!.date, process.env.TIMEZONE!)
