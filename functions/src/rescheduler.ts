@@ -1,6 +1,6 @@
 import { Request } from "firebase-functions";
 import { Response } from "express";
-import { currentMoment, getLabelIdsToSkip, todoistApi } from "./utils";
+import { currentMoment, getLowerLabelNamesToSkip, todoistApi } from "./utils";
 import moment = require("moment-timezone");
 import { Task, UpdateTaskArgs } from "@doist/todoist-api-typescript";
 
@@ -20,11 +20,11 @@ export abstract class BaseRescheduler {
     }
 
     const allTasks = await todoistApi.getTasks();
-    const labelsToSkip = await getLabelIdsToSkip();
+    const lowerLabelsToSkip = await getLowerLabelNamesToSkip();
     const now = currentMoment();
 
     const rescheduledTasks = await Promise.all(
-      allTasks.map((task) => this.rescheduleTask(task, labelsToSkip, now))
+      allTasks.map((task) => this.rescheduleTask(task, lowerLabelsToSkip, now))
     );
 
     const numComplete = rescheduledTasks.filter((success) => success).length;
@@ -35,7 +35,7 @@ export abstract class BaseRescheduler {
 
   private async rescheduleTask(
     task: Task,
-    labelsToSkip: Set<string>,
+    lowerLabelsToSkip: Set<string>,
     now: moment.Moment
   ): Promise<boolean> {
     // If the task doesn't have a date, it can't be rescheduled.
@@ -44,7 +44,11 @@ export abstract class BaseRescheduler {
     }
 
     // If the task has an ignore label, it shouldn't be rescheduled.
-    if (task.labels.some((label) => labelsToSkip.has(label))) {
+    if (
+      task.labels.some((label) =>
+        lowerLabelsToSkip.has(label.trim().toLocaleLowerCase())
+      )
+    ) {
       return false;
     }
 
