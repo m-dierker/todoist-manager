@@ -1,4 +1,4 @@
-name: Build and Deploy
+name: Build and Deploy Functions
 on:
   push:
     branches:
@@ -7,13 +7,12 @@ on:
 jobs:
   build:
     name: Build
-    working_directory: functions
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
         uses: actions/checkout@master
       - name: Install Dependencies
-        run: yarn install
+        run: cd functions && yarn install
       - name: Build
         run: yarn install --production
       - name: Archive Production Artifact
