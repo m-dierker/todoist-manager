@@ -1,4 +1,4 @@
-import { TodoistApi, Label } from "@doist/todoist-api-typescript";
+import { TodoistApi } from "@doist/todoist-api-typescript";
 import { Moment } from "moment-timezone";
 import moment = require("moment-timezone");
 
