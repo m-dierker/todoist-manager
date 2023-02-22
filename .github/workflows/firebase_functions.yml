@@ -7,12 +7,12 @@ on:
 jobs:
   build:
     name: Build
+    working_directory: functions
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
         uses: actions/checkout@master
       - name: Install Dependencies
-        working_directory: functions
         run: yarn install
       - name: Build
         run: yarn install --production
